@@ -83,6 +83,23 @@ namespace osu.Game.Rulesets.Catch.Skinning.Legacy
             }, true);
         }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            if (!hyperDash.Value)
+                return;
+
+            // stable pulses the hyper glow on a 500ms loop starting when the fruit appears: it grows slightly and fades, then snaps back.
+            double sinceAppear = Time.Current - (ObjectState.HitObject.StartTime - ObjectState.HitObject.TimePreempt);
+            float progress = (float)(((sinceAppear % hyper_pulse_duration) + hyper_pulse_duration) % hyper_pulse_duration / hyper_pulse_duration);
+
+            hyperSprite.Scale = new Vector2(1.215f + 0.075f * progress);
+            hyperSprite.Alpha = 0.96f - 0.38f * progress;
+        }
+
+        private const double hyper_pulse_duration = 500;
+
         protected void SetTexture(Texture? texture, Texture? overlayTexture)
         {
             // Sizes are reset due to an arguable osu!framework bug where Sprite retains the size of the first set texture.
